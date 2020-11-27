@@ -53,6 +53,7 @@ mod terminal {
     }
 }
 
+extern crate home;
 #[macro_use] extern crate text_io;
 fn main() {
     use std::env;
@@ -79,8 +80,12 @@ fn main() {
         return;
     }
 
-    let filename = String::from(&args[1]) + ".txt";
-
+    
+    let home_dir: String = home::home_dir().unwrap().as_os_str().to_str().unwrap().to_string();
+    let filename = String::from(&home_dir) + "/.todo/" + &args[1] + ".txt";
+    
+    std::fs::create_dir_all(String::from(&home_dir) + "/.todo").expect("Can't create .todo dir in home directory!");
+    
     match OpenOptions::new().create(true).write(true).open(&filename) {
         Err(e) => println!("{:?}", e),
         Ok(_) => ()
@@ -112,7 +117,7 @@ fn main() {
     // main loop
     while running {
         // display
-        println!("{}{}{}:{}", colors::BRIGHT_BLUE, colors::BOLD, &filename[..filename.len()-4], colors::CLEAR);
+        println!("{}{}{}:{}", colors::BRIGHT_BLUE, colors::BOLD, &args[1], colors::CLEAR);
         for i in 0..lines.len() {
             print!("{} ", if i == selected { ">" } else { " " });
             match lines[i].chars().nth(0).unwrap() {
