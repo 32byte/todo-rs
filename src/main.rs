@@ -17,61 +17,15 @@ fn main() {
 
     // print help if not enough args
     if args.len() != 2 {
-        println!(
-            "{}Use: {}todo <name>{}",
-            colors::GREY,
-            colors::YELLOW,
-            colors::CLEAR
-        );
-        println!(
-            "{}{}Keybinds{}: {}",
-            colors::GREY,
-            colors::UNDERLINE,
-            colors::UNDERLINE_OFF,
-            colors::CLEAR
-        );
-        println!(
-            "{}Arrow up/down   {}move selection up/down{}",
-            colors::BRIGHT_BLUE,
-            colors::BLUE,
-            colors::CLEAR
-        );
-        println!(
-            "{}'w'/'s'         {}move entry up/down{}",
-            colors::BRIGHT_BLUE,
-            colors::BLUE,
-            colors::CLEAR
-        );
-        println!(
-            "{}'n'             {}create entry{}",
-            colors::BRIGHT_BLUE,
-            colors::GREEN,
-            colors::CLEAR
-        );
-        println!(
-            "{}'d'             {}delete entry{}",
-            colors::BRIGHT_BLUE,
-            colors::RED,
-            colors::CLEAR
-        );
-        println!(
-            "{}'e'             {}mark as important{}",
-            colors::BRIGHT_BLUE,
-            colors::BRIGHT_RED,
-            colors::CLEAR
-        );
-        println!(
-            "{}'c'             {}mark as completed{}",
-            colors::BRIGHT_BLUE,
-            colors::GREEN,
-            colors::CLEAR
-        );
-        println!(
-            "{}'Space'         {}mark as comment{}",
-            colors::BRIGHT_BLUE,
-            colors::GREY,
-            colors::CLEAR
-        );
+        println!("{}Use: {}todo <name>{}", colors::GREY, colors::YELLOW, colors::CLEAR);
+        println!("{}{}Keybinds{}: {}", colors::GREY, colors::UNDERLINE, colors::UNDERLINE_OFF, colors::CLEAR);
+        println!("{}Arrow up/down   {}move selection up/down{}", colors::BRIGHT_BLUE, colors::BLUE, colors::CLEAR);
+        println!("{}'w'/'s'         {}move entry up/down{}", colors::BRIGHT_BLUE, colors::BLUE, colors::CLEAR);
+        println!("{}'n'             {}create entry{}", colors::BRIGHT_BLUE, colors::GREEN, colors::CLEAR);
+        println!("{}'d'             {}delete entry{}", colors::BRIGHT_BLUE, colors::RED, colors::CLEAR);
+        println!("{}'e'             {}mark as important{}", colors::BRIGHT_BLUE, colors::BRIGHT_RED, colors::CLEAR);
+        println!("{}'c'             {}mark as completed{}", colors::BRIGHT_BLUE, colors::GREEN, colors::CLEAR);
+        println!("{}'Space'         {}mark as comment{}", colors::BRIGHT_BLUE, colors::GREY, colors::CLEAR);
         return;
     }
 
