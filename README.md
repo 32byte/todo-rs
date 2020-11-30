@@ -1,5 +1,7 @@
 # Todo-rs
 
+![](demo.gif)
+
 ## About 
 
 Todo-rs is a cli application written in rust. For drawing output to the screen it uses the [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code).
