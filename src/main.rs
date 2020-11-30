@@ -9,10 +9,7 @@ fn main() {
     use std::io::prelude::*;
     use util::{colors, terminal};
 
-    // init
     let mut running: bool = true;
-
-    // load & parse file
     let args: Vec<String> = env::args().collect();
 
     // print help if not enough args
