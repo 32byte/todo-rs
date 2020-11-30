@@ -14,8 +14,8 @@ pub mod colors {
 
 pub mod terminal {
     // from the kb.c file
-    extern "C" { 
-        fn kb() -> u8; 
+    extern "C" {
+        fn kb() -> u8;
         fn hide_cursor_and_text();
         fn show_cursor_and_text();
     }
@@ -23,8 +23,8 @@ pub mod terminal {
     pub fn getch() -> u8 {
         let ch: u8;
 
-        unsafe { 
-            ch = kb(); 
+        unsafe {
+            ch = kb();
         }
 
         // clear the line, and move the cursor back
@@ -34,17 +34,21 @@ pub mod terminal {
     }
 
     pub fn hide() {
-        unsafe { hide_cursor_and_text(); }
+        unsafe {
+            hide_cursor_and_text();
+        }
     }
 
     pub fn show() {
-        unsafe { show_cursor_and_text(); }
+        unsafe {
+            show_cursor_and_text();
+        }
     }
 
     pub fn clear_lines(lines: i32) {
-        for _ in 0..lines{
+        for _ in 0..lines {
             print!("\x1b[2K\x1b[1A");
-        } 
+        }
         print!("\x1b[2K");
     }
 }
