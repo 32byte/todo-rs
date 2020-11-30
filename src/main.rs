@@ -1,64 +1,13 @@
-#[allow(dead_code)]
-mod colors {
-    pub static RED: &str = "\x1b[31m";
-    pub static BRIGHT_RED: &str = "\x1b[91m";
-    pub static GREEN: &str = "\x1b[32m";
-    pub static BLUE: &str = "\x1b[34m";
-    pub static BRIGHT_BLUE: &str = "\x1b[96m";
-    pub static YELLOW: &str = "\x1b[33m";
-    pub static GREY: &str = "\x1b[90m";
-    pub static CLEAR: &str = "\x1b[0m";
-    pub static BOLD: &str = "\x1b[1m";
-    pub static UNDERLINE: &str = "\x1b[4m";
-    pub static UNDERLINE_OFF: &str = "\x1b[24m";
-}
+mod util;
 
-#[allow(dead_code)]
-mod terminal {
-    extern "C" { 
-        fn kb() -> u8; 
-        fn hide_cursor_and_text();
-        fn show_cursor_and_text();
-    }
-
-    pub fn getch() -> u8 {
-        let ch: u8;
-
-        unsafe { 
-            ch = kb(); 
-        }
-
-        print!("\x1b[1K\x1b[0E");
-
-        ch
-    }
-
-    pub fn hide() {
-        unsafe { hide_cursor_and_text(); }
-    }
-
-    pub fn show() {
-        unsafe { show_cursor_and_text(); }
-    }
-
-    pub fn cls() {
-        print!("\x1b[2J");
-    }
-
-    pub fn clear_lines(lines: i32) {
-        for _ in 0..lines{
-            print!("\x1b[2K\x1b[1A");
-        } 
-        print!("\x1b[2K");
-    }
-}
-
-extern crate home;
-#[macro_use] extern crate text_io;
 fn main() {
+    extern crate text_io;
+    extern crate home;
+
     use std::env;
     use std::fs::{OpenOptions, File};
-    use std::io::prelude::*;    
+    use std::io::prelude::*;
+    use util::{colors, terminal};    
 
     // init
     let mut running: bool = true;
@@ -67,7 +16,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     // print help if not enough args
-    if args.len() < 2 {
+    if args.len() != 2 {
         println!("{}Use: {}todo <name-of-todo-list>{}", colors::GREY, colors::YELLOW, colors::CLEAR);
         println!("{}{}Keybinds{}: {}", colors::GREY, colors::UNDERLINE, colors::UNDERLINE_OFF, colors::CLEAR);
         println!("{}Arrow up/down   {}move selection up/down{}", colors::BRIGHT_BLUE, colors::BLUE, colors::CLEAR);
@@ -80,17 +29,20 @@ fn main() {
         return;
     }
 
-    
+    // get the path to the file
     let home_dir: String = home::home_dir().unwrap().as_os_str().to_str().unwrap().to_string();
     let filename = String::from(&home_dir) + "/.todo/" + &args[1] + ".txt";
     
+    // create ~/.todo directory
     std::fs::create_dir_all(String::from(&home_dir) + "/.todo").expect("Can't create .todo dir in home directory!");
     
+    // create the file
     match OpenOptions::new().create(true).write(true).open(&filename) {
         Err(e) => println!("{:?}", e),
         Ok(_) => ()
     };
 
+    // read the contents of the file
     let mut file = File::open(&filename).expect("File does not exist!");
     let mut content = String::new();
     file.read_to_string(&mut content).expect("Something went wrong while reading from the file!");
@@ -104,8 +56,8 @@ fn main() {
             continue;
         }
 
-        if !l.starts_with("! ") && !l.starts_with("✓ ") && !l.starts_with("# ") && !l.starts_with("· ") {
-            l = String::from("· ") + &l[..];
+        if !l.starts_with("! ") && !l.starts_with("✓ ") && !l.starts_with("# ") && !l.starts_with("- ") {
+            l = String::from("- ") + &l[..];
         }
         lines.push(l);
     }
@@ -139,7 +91,7 @@ fn main() {
         match ch {
             // Space was pressed
              32 => if lines.len() > 0 { lines[selected] = if lines[selected].starts_with("# ") {
-                    String::from("·") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
+                    String::from("-") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 } else {
                     String::from("#") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 }},
@@ -149,7 +101,7 @@ fn main() {
              66 => if lines.len() > 0 && selected < lines.len()-1 { selected += 1 }, 
             // c was pressed
              99 => if lines.len() > 0 { lines[selected] = if lines[selected].starts_with("✓ ") {
-                    String::from("·") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
+                    String::from("-") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 } else {
                     String::from("✓") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 }}, 
@@ -157,7 +109,7 @@ fn main() {
             100 => if lines.len() > 0 { lines.remove(selected); }, 
             // e was pressed
             101 => if lines.len() > 0 { lines[selected] = if lines[selected].starts_with("! ") {
-                    String::from("·") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
+                    String::from("-") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 } else {
                     String::from("!") + &lines[selected][lines[selected].chars().nth(0).unwrap().len_utf8()..] 
                 }}, 
@@ -165,8 +117,8 @@ fn main() {
             110 => {
                 terminal::show();
                 println!("{}Input a new entry: {}", colors::BRIGHT_BLUE, colors::CLEAR);
-                let s: String = read!("{}\n");
-                lines.push(String::from("· ") + &s);
+                let s: String = text_io::read!("{}\n");
+                lines.push(String::from("- ") + &s);
                 terminal::clear_lines(2);
                 terminal::hide();
             }
@@ -193,8 +145,8 @@ fn main() {
 
     terminal::show();
 
-    // if there are changes, write them to the file
-    let mut file = File::create(&filename).expect("Create failed");
+    // write to file
+    let mut file = File::create(&filename).expect("Opening file for reading failed");
     for i in 0..lines.len() {
         if i < lines.len() - 1 {
             file.write_all((String::from(&lines[i]) + "\n").as_bytes()).expect("Write failed!");
